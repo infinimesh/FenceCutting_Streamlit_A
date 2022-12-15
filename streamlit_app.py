@@ -9,6 +9,7 @@ from PIL import Image
 import io
 import os
 from scipy.io import wavfile as scipy_wav
+import pydub
 
 ##Libraries for prediction
 ##--------------------------------
@@ -20,19 +21,8 @@ import auditok
 
 
 
-
-
-## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
 ## Page decorations
 ##--------------------------------
-
-
 id_logo = Image.open("TypoMeshDarkFullat3x.png")
 col1, col2, col3 = st.columns([1, 3, 1])
 with col2:
@@ -62,23 +52,39 @@ st.header(" ")
 st.markdown("<h2 style='text-align: center; color: grey;'>Select data to analyze</h2>", 
             unsafe_allow_html=True)
 
+
+
 st.subheader("Select one of the samples")
 ##---------------------------------------
-# selected_provided_file = st.selectbox(label="", 
-#                             options=["option_1", 
-#                                      "option_2",
-#                                      "option_3",]
-#                             )
-
-# if selected_provided_file == "option_1":
-#     region = auditok.load("./samples2try/sample_Fence_Session_2.wav")
-# elif selected_provided_file == "option_2":
-#     region = auditok.load("./samples2try/sample_Fence_thin_wire.wav")
-# elif selected_provided_file == "option_3":    
-#     region = auditok.load("./samples2try/sample_Green_Fence_Strings_Session_1.wav")
-
 selected_provided_file2 = st.selectbox(label="", options=os.listdir("./samples2try/"))
-region = auditok.load("./samples2try/" + selected_provided_file2)
+audio_file_name = "./samples2try/" + selected_provided_file2
+
+
+
+st.subheader("or Upload an audio file in WAV format")
+##---------------------------------------------------
+st.write("if a file is uploaded, previously selected samples are not taken into account")
+
+uploaded_audio_file = st.file_uploader(label="Select a single-channels WAV file", 
+                                        type="wav", 
+                                        accept_multiple_files=False, 
+                                        key=None, 
+                                        help=None, 
+                                        on_change=None, 
+                                        args=None, 
+                                        kwargs=None, 
+                                        disabled=False)
+
+
+##Data reading
+##----------------------------
+if uploaded_audio_file is not None:
+    bytes_data = uploaded_audio_file.read()
+    region = auditok.load(bytes_data, sampling_rate=44100, sample_width=2, channels=1, skip=0.001)
+
+else:
+    region = auditok.load(audio_file_name)
+
 
 
 st.subheader("Play the audio")
