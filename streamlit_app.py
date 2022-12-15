@@ -7,6 +7,7 @@
 import streamlit as st
 from PIL import Image
 import io
+import os
 from scipy.io import wavfile as scipy_wav
 
 ##Libraries for prediction
@@ -47,7 +48,11 @@ st.header(" ")
 st.header(" ")
 
 
-
+# # st.snow()
+# snow_state = 0
+# if snow_state == 0:
+#     st.snow()
+#     snow_state = 1
 
 
 ## -------------------------------
@@ -59,24 +64,27 @@ st.markdown("<h2 style='text-align: center; color: grey;'>Select data to analyze
 
 st.subheader("Select one of the samples")
 ##---------------------------------------
-selected_provided_file = st.selectbox(label="", 
-                            options=["option_1", 
-                                     "option_2",
-                                     "option_3",]
-                            )
+# selected_provided_file = st.selectbox(label="", 
+#                             options=["option_1", 
+#                                      "option_2",
+#                                      "option_3",]
+#                             )
 
-if selected_provided_file == "option_1":
-    region = auditok.load("./samples2try/sample_Fence_Session_2.wav")
-elif selected_provided_file == "option_2":
-    region = auditok.load("./samples2try/sample_Fence_thin_wire.wav")
-elif selected_provided_file == "option_3":    
-    region = auditok.load("./samples2try/sample_Green_Fence_Strings_Session_1.wav")
+# if selected_provided_file == "option_1":
+#     region = auditok.load("./samples2try/sample_Fence_Session_2.wav")
+# elif selected_provided_file == "option_2":
+#     region = auditok.load("./samples2try/sample_Fence_thin_wire.wav")
+# elif selected_provided_file == "option_3":    
+#     region = auditok.load("./samples2try/sample_Green_Fence_Strings_Session_1.wav")
 
+selected_provided_file2 = st.selectbox(label="", options=os.listdir("./samples2try/"))
+region = auditok.load("./samples2try/" + selected_provided_file2)
 
 
 st.subheader("Play the audio")
 ##----------------------------
 # st.audio(region.samples, sample_rate=region.sampling_rate)
+
 audio_sampling_rate = region.sampling_rate
 audio_data = region.samples
 
@@ -108,6 +116,24 @@ st.image(auditok_fig_reggions)
 
 events_per_second = len(audio_regions) / region.duration
 
-st.subheader("Rate of Events per second:")
-st.markdown(f"### _{events_per_second}_")
+st.subheader("Number of detected Events:")
+##----------------------------------------
+st.markdown(f"### _{len(audio_regions)}_")
 
+# st.subheader("Rate of Events per second:")
+# st.markdown(f"### _{events_per_second}_")
+
+st.subheader("Select Threshoold for Alarm:")
+##----------------------------------------
+st.write("If the number of detected events is more of equal to the Threshoold within 10sec, the alarm is triggered.")
+# alarm_threshold = st.slider('Select the Threshoold level', 0, 10, 3)
+alarm_threshold = st.slider('', 0, 10, 3)
+# st.write('Values:', alarm_threshold)
+
+
+if len(audio_regions) >= alarm_threshold:
+    st.error('===> Alarm is triggered. <===', icon="🚨")
+elif len(audio_regions) >= 1:
+    st.info('An Event is detected, but the Threshoold is not reached.', icon="ℹ️")
+else:
+    st.success('Nothing is detected, keep calm, relax.', icon="✅")
