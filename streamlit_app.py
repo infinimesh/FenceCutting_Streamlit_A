@@ -79,7 +79,7 @@ uploaded_audio_file = st.file_uploader(label="Select a single-channels WAV file"
 ##----------------------------
 if uploaded_audio_file is not None:
     bytes_data = uploaded_audio_file.read()
-    region = auditok.load(bytes_data, sampling_rate=44100, sample_width=2, channels=1, skip=0.001)
+    region = auditok.load(bytes_data, sampling_rate=48000, sample_width=2, channels=1, skip=0.001)
 
 else:
     region = auditok.load(audio_file_name)
