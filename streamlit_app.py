@@ -9,7 +9,6 @@ from PIL import Image
 import io
 import os
 from scipy.io import wavfile as scipy_wav
-import pydub
 
 ##Libraries for prediction
 ##--------------------------------
