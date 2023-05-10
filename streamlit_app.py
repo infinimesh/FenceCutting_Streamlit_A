@@ -5,6 +5,7 @@
 ##Libraries for Streamlit
 ##--------------------------------
 import streamlit as st
+st.title('Uber pickups in NYC')
 # from PIL import Image
 # import io
 # import os
